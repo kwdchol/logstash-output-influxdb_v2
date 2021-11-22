@@ -148,9 +148,8 @@ end # def register
     # Since we'll be buffering them to send as a batch, we'll only collect
     # the values going into the points array
     
-    #time  = timestamp_at_precision(event.timestamp, @time_precision.to_sym)
+    time  = timestamp_at_precision(event.timestamp, @time_precision.to_sym)
     point = create_point_from_event(event)
-    
     exclude_fields!(point)
     coerce_values!(point)
 
@@ -166,7 +165,8 @@ end # def register
 
     event_hash = {
       :name => event.sprintf(@measurement),
-      :fields  => point
+      :fields  => point,
+      :time =>time
     }
     event_hash[:tags] = tags unless tags.empty?
     
