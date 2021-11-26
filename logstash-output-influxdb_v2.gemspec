@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'logstash-output-influxdb_v2'
-  s.version       = '0.2.3'
+  s.version       = '0.2.5'
   s.licenses      = ['Apache-2.0']
   s.summary       = 'Writes metrics to InfluxDB v2.*'
   s.description   = 'copy logstash-output-influxdb'

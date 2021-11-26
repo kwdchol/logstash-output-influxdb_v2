@@ -57,7 +57,7 @@ class LogStash::Outputs::InfluxdbV2 < LogStash::Outputs::Base
   # Set the level of precision of `time`
   #
   # only useful when overriding the time value
-  config :time_precision, :validate => ["n", "u", "ms", "s", "m", "h"], :default => "ms"
+  config :time_precision, :validate => ["n", "u", "ms", "s"], :default => "ms"
 
   # Allow value coercion
   #
@@ -129,11 +129,19 @@ class LogStash::Outputs::InfluxdbV2 < LogStash::Outputs::Base
       :logger => @logger
     )
     
+
+    @precision = case @time_precision.to_sym
+      when :s  then InfluxDB2::WritePrecision::SECOND
+      when :ms then InfluxDB2::WritePrecision::MILLISECOND
+      when :u  then InfluxDB2::WritePrecision::MICROSECOND
+      when :n  then InfluxDB2::WritePrecision::NANOSECOND
+    end
+
     @influxdb2client= InfluxDB2::Client.new("http://#{host}:#{port}",@token, 
-       use_ssl: false,
-       org: @org,
-       precision: InfluxDB2::WritePrecision::NANOSECOND,
-       bucket: @bucket)
+        use_ssl: false,
+        org: @org,
+        precision: @precision,
+        bucket: @bucket)
     @write_api = @influxdb2client.create_write_api
 end # def register
 
@@ -285,8 +293,6 @@ def flush(events, teardown = false)
   # precision must be one of the valid values for time_precision
   def timestamp_at_precision( timestamp, precision )
     multiplier = case precision
-      when :h  then 1.0/3600
-      when :m  then 1.0/60
       when :s  then 1
       when :ms then 1000
       when :u  then 1000000
