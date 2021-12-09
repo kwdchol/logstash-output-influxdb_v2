@@ -43,8 +43,8 @@ This plugin supports the following configuration options plus the <<plugins-{typ
 | <<plugins-{type}s-{plugin}-host>> |<<string,string>>|Yes
 | <<plugins-{type}s-{plugin}-port>> |<<number,number>>|No
 | <<plugins-{type}s-{plugin}-token>> |<<password,string>>|Yes
-| <<plugins-{type}s-{plugin}-org>>  |<<string,string>>|No
-| <<plugins-{type}s-{plugin}-bucket>> |<<string,string>>|No
+| <<plugins-{type}s-{plugin}-org>>  |<<string,string>>|Yes
+| <<plugins-{type}s-{plugin}-bucket>> |<<string,string>>|Yes
 | <<plugins-{type}s-{plugin}-measurement>> |<<string,string>>|No
 | <<plugins-{type}s-{plugin}-time_precision>> |<<string,string>>, one of `["n", "u", "ms", "s"]`|No
 | <<plugins-{type}s-{plugin}-open_timeout>> |<<number,number>>|No
@@ -69,18 +69,8 @@ This plugin supports the following configuration options plus the <<plugins-{typ
 | <<plugins-{type}s-{plugin}-exclude_fields>> |<<array,array>>|No
 | <<plugins-{type}s-{plugin}-send_as_tags>> |<<array,array>>|No
 | <<plugins-{type}s-{plugin}-use_event_fields_for_data_points>> |<<boolean,boolean>>|No
-
 | <<plugins-{type}s-{plugin}-flush_size>> |<<number,number>>|No
 | <<plugins-{type}s-{plugin}-idle_flush_time>> |<<number,number>>|No
-
-| <<plugins-{type}s-{plugin}-initial_delay>> |<<number,number>>|No
-| <<plugins-{type}s-{plugin}-max_retries>> |<<number,number>>|No
-
-
-
-
-
-
 |=======================================================================
 
 Also see <<plugins-{type}s-{plugin}-common-options>> for a list of options supported by all
@@ -88,6 +78,209 @@ output plugins.
 
 &nbsp;
 
+[id="plugins-{type}s-{plugin}-host"]
+===== `host` 
+
+  * This is a required setting.
+  * Value type is <<string,string>>
+  * There is no default value for this setting.
+
+The hostname or IP address to reach your InfluxDB instance
+
+[id="plugins-{type}s-{plugin}-port"]
+===== `port` 
+
+  * Value type is <<number,number>>
+  * Default value is `8086`
+
+The port for InfluxDB
+
+[id="plugins-{type}s-{plugin}-token"]
+===== `token` 
+
+  * Value type is <<string,string>>
+  * Default value is `nil`
+
+InfluxDB API tokens ensure secure interaction between InfluxDB and external tools such as clients or applications. 
+An API token belongs to a specific user and identifies InfluxDB permissions within the user’s organization.
+
+[id="plugins-{type}s-{plugin}-org"]
+===== `org` 
+
+  * Value type is <<string,string>>
+  * Default value is `nil`
+  * Default organization bucket for writes
+  Use the influx org create command to create a new organization. A new organization requires the following:
+
+  A name for the organization 
+  # Syntax
+  influx org create -n <org-name>
+
+  # Example
+  influx org create -n my-org
+
+  An organization is a workspace for a group of users. All dashboards, tasks, buckets, members, etc., belong to an organization.
+  
+[id="plugins-{type}s-{plugin}-bucket"]
+===== `bucket` 
+
+  * Value type is <<string,string>>
+  * Default value is `"statistics"`
+  * Default destination bucket for writes
+
+The database to write - supports sprintf formatting
+
+[id="plugins-{type}s-{plugin}-measurement"]
+===== `measurement` 
+
+  * Value type is <<string,string>>
+  * Default value is `"logstash"`
+
+Measurement name - supports sprintf formatting
+
+[id="plugins-{type}s-{plugin}-time_precision"]
+===== `time_precision` 
+
+  * Value can be any of: `n`, `u`, `ms`, `s`
+  * Default value is `"ms"`
+  * Default precision for the unix timestamps within the body line-protocol
+
+Set the level of precision of `time`
+
+only useful when overriding the time value
+
+[id="plugins-{type}s-{plugin}-open_timeout"]
+===== `open_timeout` 
+
+  * Value type is <<number,number>>
+  * Default value is `10`
+
+Number of seconds to wait for the connection to open
+
+[id="plugins-{type}s-{plugin}-write_timeout"]
+===== `write_timeout` 
+
+  * Value type is <<number,number>>
+  * Default value is `10`
+
+Number of seconds to wait for one block of data to be written
+
+[id="plugins-{type}s-{plugin}-read_timeout"]
+===== `read_timeout` 
+
+  * Value type is <<number,number>>
+  * Default value is `10`
+
+Number of seconds to wait for one block of data to be read
+
+[id="plugins-{type}s-{plugin}-max_redirect_count"]
+===== `max_redirect_count` 
+
+  * Value type is <<number,number>>
+  * Default value is `10`
+
+Maximal number of followed HTTP redirects
+
+[id="plugins-{type}s-{plugin}-redirect_forward_authorization"]
+===== `redirect_forward_authorization` 
+
+  * Value type is <<boolean,boolean>>
+  * Default value is `false`
+
+Pass Authorization header to different domain during HTTP redirect.
+
+[id="plugins-{type}s-{plugin}-use_ssl"]
+===== `use_ssl` 
+
+  * Value type is <<boolean,boolean>>
+  * Default value is `false`
+
+Turn on/off SSL for HTTP communication
+
+[id="plugins-{type}s-{plugin}-verify_mode"]
+===== `verify_mode` 
+
+  * Value type is `OpenSSL::SSL::VERIFY_NONE` ,`OpenSSL::SSL::VERIFY_PEER`
+  * Default value is `nil`
+Sets the flags for the certification verification at beginning of SSL/TLS session.
+
+
+[id="plugins-{type}s-{plugin}-batchSize"]
+===== `batchSize` 
+
+  * Value type is <<number,number>>
+  * Default value is `1000`
+
+the number of data point to collect in batch
+
+[id="plugins-{type}s-{plugin}-flush_interval"]
+===== `flush_interval` 
+
+  * Value type is <<number,number>>
+  * Default value is `1000`
+
+the number of milliseconds before the batch is written
+
+[id="plugins-{type}s-{plugin}-retry_interval"]
+===== `retry_interval` 
+
+  * Value type is <<number,number>>
+  * Default value is `5000`
+
+the number of milliseconds to retry unsuccessful write. The retry interval is used when the InfluxDB server does not specify "Retry-After" header.
+
+[id="plugins-{type}s-{plugin}-jitter_interval"]
+===== `jitter_interval` 
+
+  * Value type is <<number,number>>
+  * Default value is `0`
+
+the number of milliseconds to increase the batch flush interval by a random amount
+
+[id="plugins-{type}s-{plugin}-max_retries"]
+===== `max_retries` 
+
+  * Value type is <<number,number>>
+  * Default value is `5`
+
+The number of max retries when write fails
+???The number of time to retry recoverable errors before dropping the events. ?
+
+A value of -1 will cause the plugin to retry indefinately.
+A value of 0 will cause the plugin to never retry.
+Otherwise it will retry up to the specified number of times.
+
+[id="plugins-{type}s-{plugin}-max_retry_delay"]
+===== `max_retry_delay` 
+
+  * Value type is <<number,number>>
+  * Default value is `125000`
+
+maximum delay when retrying write in milliseconds
+
+[id="plugins-{type}s-{plugin}-max_retry_time"]
+===== `max_retry_time` 
+
+  * Value type is <<number,number>>
+  * Default value is `180000`
+
+maximum total retry timeout in milliseconds
+
+[id="plugins-{type}s-{plugin}-exponential_base"]
+===== `exponential_base` 
+
+  * Value type is <<number,number>>
+  * Default value is `2`
+
+the base for the exponential retry delay, the next delay is computed using random exponential backoff as a random value within the interval retry_interval * exponential_base^(attempts-1) and retry_interval * exponential_base^(attempts). Example for retry_interval=5000, exponential_base=2, max_retry_delay=125000, total=5 Retry delays are random distributed values within the ranges of [5000-10000, 10000-20000, 20000-40000, 40000-80000, 80000-125000]
+
+[id="plugins-{type}s-{plugin}-batch_abort_on_exception"]
+===== `batch_abort_on_exception` 
+
+  * Value type is <<boolean,boolean>>
+  * Default value is `false`
+
+the batching worker will be aborted after failed retry strategy
 
 [id="plugins-{type}s-{plugin}-allow_time_override"]
 ===== `allow_time_override` 
@@ -118,7 +311,6 @@ format is `{'column_name' => 'datatype'}`
 
 currently supported datatypes are `integer` and `float`
 
-
 [id="plugins-{type}s-{plugin}-data_points"]
 ===== `data_points` 
 
@@ -131,14 +323,6 @@ Example: `{'column1' => 'value1', 'column2' => 'value2'}`
 
 Events for the same measurement will be batched together where possible
 Both keys and values support sprintf formatting
-
-[id="plugins-{type}s-{plugin}-bucket"]
-===== `bucket` 
-
-  * Value type is <<string,string>>
-  * Default value is `"statistics"`
-
-The database to write - supports sprintf formatting
 
 [id="plugins-{type}s-{plugin}-exclude_fields"]
 ===== `exclude_fields` 
@@ -155,6 +339,28 @@ exec plugin).
 
 This only applies when use_event_fields_for_data_points is true.
 
+[id="plugins-{type}s-{plugin}-send_as_tags"]
+===== `send_as_tags` 
+
+  * Value type is <<array,array>>
+  * Default value is `["host"]`
+
+An array containing the names of fields to send to Influxdb as tags instead 
+of fields. Influxdb 0.9 convention is that values that do not change every
+request should be considered metadata and given as tags. Tags are only sent when
+present in `data_points` or if `use_event_fields_for_data_points` is `true`. 
+
+
+[id="plugins-{type}s-{plugin}-use_event_fields_for_data_points"]
+===== `use_event_fields_for_data_points` 
+
+  * Value type is <<boolean,boolean>>
+  * Default value is `false`
+
+Automatically use fields from the event as the data points sent to Influxdb
+| <<plugins-{type}s-{plugin}-flush_size>> |<<number,number>>|No
+
+
 [id="plugins-{type}s-{plugin}-flush_size"]
 ===== `flush_size` 
 
@@ -163,15 +369,6 @@ This only applies when use_event_fields_for_data_points is true.
 
 This setting controls how many events will be buffered before sending a batch
 of events. Note that these are only batched for the same measurement
-
-[id="plugins-{type}s-{plugin}-host"]
-===== `host` 
-
-  * This is a required setting.
-  * Value type is <<string,string>>
-  * There is no default value for this setting.
-
-The hostname or IP address to reach your InfluxDB instance
 
 [id="plugins-{type}s-{plugin}-idle_flush_time"]
 ===== `idle_flush_time` 
@@ -189,105 +386,6 @@ logstash will flush those 10 events automatically.
 This helps keep both fast and slow log streams moving along in
 near-real-time.
 
-[id="plugins-{type}s-{plugin}-initial_delay"]
-===== `initial_delay` 
-
-  * Value type is <<number,number>>
-  * Default value is `1`
-
-The amount of time in seconds to delay the initial retry on connection failure.  
-
-The delay will increase exponentially for each retry attempt (up to max_retries).
-
-[id="plugins-{type}s-{plugin}-max_retries"]
-===== `max_retries` 
-
-  * Value type is <<number,number>>
-  * Default value is `3`
-
-The number of time to retry recoverable errors before dropping the events.
-
-A value of -1 will cause the plugin to retry indefinately.
-A value of 0 will cause the plugin to never retry.
-Otherwise it will retry up to the specified number of times.
-
-
-[id="plugins-{type}s-{plugin}-measurement"]
-===== `measurement` 
-
-  * Value type is <<string,string>>
-  * Default value is `"logstash"`
-
-Measurement name - supports sprintf formatting
-
-[id="plugins-{type}s-{plugin}-token"]
-===== `token` 
-
-  * Value type is <<string,string>>
-  * Default value is `nil`
-
-The password for the user who access to the named database
-
-[id="plugins-{type}s-{plugin}-port"]
-===== `port` 
-
-  * Value type is <<number,number>>
-  * Default value is `8086`
-
-The port for InfluxDB
-
-[id="plugins-{type}s-{plugin}-retention_policy"]
-===== `retention_policy` 
-
-  * Value type is <<string,string>>
-  * Default value is `"autogen"`
-
-The retention policy to use
-
-[id="plugins-{type}s-{plugin}-send_as_tags"]
-===== `send_as_tags` 
-
-  * Value type is <<array,array>>
-  * Default value is `["host"]`
-
-An array containing the names of fields to send to Influxdb as tags instead 
-of fields. Influxdb 0.9 convention is that values that do not change every
-request should be considered metadata and given as tags. Tags are only sent when
-present in `data_points` or if `use_event_fields_for_data_points` is `true`. 
-
-[id="plugins-{type}s-{plugin}-ssl"]
-===== `ssl` 
-
-  * Value type is <<boolean,boolean>>
-  * Default value is `false`
-
-Enable SSL/TLS secured communication to InfluxDB
-
-[id="plugins-{type}s-{plugin}-time_precision"]
-===== `time_precision` 
-
-  * Value can be any of: `n`, `u`, `ms`, `s`, `m`, `h`
-  * Default value is `"ms"`
-
-Set the level of precision of `time`
-
-only useful when overriding the time value
-
-[id="plugins-{type}s-{plugin}-use_event_fields_for_data_points"]
-===== `use_event_fields_for_data_points` 
-
-  * Value type is <<boolean,boolean>>
-  * Default value is `false`
-
-Automatically use fields from the event as the data points sent to Influxdb
-
-[id="plugins-{type}s-{plugin}-user"]
-===== `user` 
-
-  * Value type is <<string,string>>
-  * Default value is `nil`
-
-The user who has access to the named database
 
 [id="plugins-{type}s-{plugin}-common-options"]
 include::{include_path}/{type}.asciidoc[]
